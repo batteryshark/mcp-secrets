@@ -1,4 +1,4 @@
-# MCP Secrets 
+# 🔒 MCP Secrets 🔓
 
 *When MCP servers need credentials and you want a decent option.*
 
