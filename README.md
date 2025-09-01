@@ -313,6 +313,29 @@ A: Yes, it works with any MCP client that supports elicitation.
 **Q: Can I customize the dialog appearance?**
 A: Set `MCP_SECRETS_UI_BINARY` to point to your own dialog binary.
 
+## TODO
+
+### SecretsManager Enhancement - User-Controlled Secret Confirmation
+
+Add a secrets option to always prompt when a certain secret is being used.
+
+**Implementation Concept:**
+- Opt-in feature controlled by a flag
+- Always ask user to confirm via elictation before proceeding with secret use
+- Two confirmation modes:
+  - **First-run caching**: Ask once when MCP server starts, cache the decision
+  - **Every-time**: Ask for confirmation on every secret access
+
+**User Control Benefits:**
+- Puts user in driver's seat for sensitive secret usage
+- If user denies access, operation fails gracefully
+- Optional behavior - users who don't care can let secrets be used automatically
+- Enhanced security for paranoid users who want explicit control
+
+**Technical Notes:**
+- Flag-based activation in the template (e.g., `confirm_secrets_use=never,first,always`)
+- Cache confirmation state per server session or globally
+
 ## License
 
 MIT. Use it, break it, fix it, whatever. Just don't blame me when your secrets get compromised because you YOLO'd.
