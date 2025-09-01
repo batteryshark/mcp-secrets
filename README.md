@@ -317,7 +317,7 @@ A: Set `MCP_SECRETS_UI_BINARY` to point to your own dialog binary.
 
 ### SecretsManager Enhancement - User-Controlled Secret Confirmation
 
-Add a secrets option to always prompt when a certain secret is being used.
+Add a secrets flag to support confirmation when a secret is used at varying levels.
 
 **Implementation Concept:**
 - Opt-in feature controlled by a flag
