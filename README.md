@@ -22,18 +22,23 @@ MCP servers need API keys, passwords, and tokens. The obvious approaches are all
 MCP's elicitation feature sounds promising - direct input bypassing conversation logs. But the spec explicitly [warns](https://modelcontextprotocol.io/specification/2025-06-18/client/elicitation#security-considerations) against sensitive data because:
 
 1. People screw up secrets management... like a lot
-
-2. Opens doors to phishing attacks...
+2. Opens doors to phishing attacks
+   
     ...and evidenced by how many people set tool use to auto, that's not gonna get better
+4. MCP utilities/IDEs might not be trustworthy
+   
+    ...actually they definitely are not - between the megacorps and the vibe coding projects bound to get hacked into oblivion, nope!
 
-3. MCP utilities/IDEs might not be trustworthy... 
-    ...actually no they definitely aren't - between the megacorps and the vibe coding projects.
 
-So - with all of this, if you have a bunch of neat tools to give your models but they need secrets, what option are you left with?
+---
+With all of this, what option are you left with if you want to give a bunch of neat tools to your models???
+
+> How about using your system keychain like a sensible human?
+---
+<br/>
+
 
 ## The Solution
-
-**Use your system keychain like a sensible human.**
 
 This framework stores secrets in platform-native secure storage (macOS Keychain, Windows Credential Manager, Linux libsecret) and presents an out-of-band native dialog when new credentials are needed.
 
