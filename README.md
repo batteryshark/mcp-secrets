@@ -2,6 +2,12 @@
 
 *When MCP servers need credentials and you want a decent option.*
 
+<p align="center">
+  <img src="artwork/screenshot.jpg" alt="Secrets UI" width="300"/>
+</p>
+
+
+
 ## The Problem
 
 MCP servers need API keys, passwords, and tokens. The obvious approaches are all terrible:
