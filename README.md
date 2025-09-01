@@ -1,6 +1,6 @@
 # 🔒 MCP Secrets 🔓
 
-*When MCP servers need credentials and you want a decent option.*
+*When MCP servers need credentials and you want a decent(ish?) option.*
 
 <p align="center">
   <img src="artwork/screenshot.jpg" alt="Secrets UI" width="300"/>
