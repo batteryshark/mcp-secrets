@@ -1,0 +1,26 @@
+{
+  "title": "MCP Secrets Request: test-mcp-server",
+  "description": "Verification Code: XQ7K-9M2P\n\nConfirm this code matches what's displayed in your MCP client before proceeding.",
+  "fields": [
+    {
+      "name": "api_key",
+      "label": "API Key",
+      "field_type": "password",
+      "required": true,
+      "help_text": "Your secret API key from the provider"
+    },
+    {
+      "name": "username",
+      "label": "Username",
+      "required": true,
+      "placeholder": "your-username"
+    },
+    {
+      "name": "server_url",
+      "label": "Server URL",
+      "default": "https://api.example.com",
+      "required": false,
+      "help_text": "The base URL for the API server"
+    }
+  ]
+}

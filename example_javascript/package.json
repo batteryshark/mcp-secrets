@@ -1,0 +1,46 @@
+{
+  "name": "mcp-secrets-js",
+  "version": "1.0.0",
+  "description": "Secure credential management for MCP servers using FastMCP",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "npx fastmcp dev src/examples/server.ts",
+    "inspect": "npx fastmcp inspect src/examples/server.ts",
+    "test": "node --test",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "fastmcp": "^3.15.2",
+    "@napi-rs/keyring": "^1.1.10",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "secrets",
+    "credentials",
+    "keychain",
+    "fastmcp",
+    "model-context-protocol"
+  ],
+  "author": "Kira",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "secrets_dialog/**/*",
+    "README.md"
+  ]
+}
