@@ -76,12 +76,6 @@ export class AsyncUIHandler {
 }
 
 export function get_async_ui_handler(): AsyncUIHandler {
-  // Check for custom binary path
-  const customBinary = process.env.MCP_SECRETS_UI_BINARY;
-  
-  if (customBinary) {
-    return new AsyncUIHandler(customBinary);
-  }
-  
+  // Always use default binary selection - no custom binaries for security
   return new AsyncUIHandler();
 }

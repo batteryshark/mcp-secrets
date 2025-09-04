@@ -73,14 +73,6 @@ class AsyncUIHandler:
     
 
 def get_async_ui_handler() -> AsyncUIHandler:
-    """Get async UI handler based on environment configuration."""
-    # Check for custom binary path
-    custom_binary = os.getenv("MCP_SECRETS_UI_BINARY")
-    
-    if custom_binary:
-        if not Path(custom_binary).exists():
-            raise Exception(f"Custom UI binary not found: {custom_binary}")
-        return AsyncUIHandler(custom_binary)
-    
-    # Use default binary selection
+    """Get async UI handler with secure default binary selection."""
+    # Always use default binary selection - no custom binaries for security
     return AsyncUIHandler()

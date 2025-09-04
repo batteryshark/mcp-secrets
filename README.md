@@ -310,9 +310,6 @@ A: Prevents malicious software from creating fake dialogs to steal your credenti
 **Q: Does this work with Claude Desktop?**
 A: Yes, it works with any MCP client that supports elicitation.
 
-**Q: Can I customize the dialog appearance?**
-A: Set `MCP_SECRETS_UI_BINARY` to point to your own dialog binary.
-
 ## TODO
 
 ### SecretsManager Enhancement - User-Controlled Secret Confirmation
