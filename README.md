@@ -47,6 +47,8 @@ This framework stores secrets in platform-native secure storage (macOS Keychain,
 - 🔐 **System keychain integration** - Actually secure storage
 - 🖥️ **Native cross-platform dialogs** - No web UI nonsense  
 - 🛡️ **Verification codes** - Anti-phishing protection...ish
+- 🔒 **Secure by default** - Every secret access requires user permission
+- 📋 **Session caching** - "Allow for session" reduces prompt fatigue
 - ⚡ **Async operation** - Doesn't block MCP flow
 - 🔄 **Python + JavaScript** - Because ecosystems exist and generating the javascript one took like 2 minutes.
 - 🎯 **FastMCP integration** - Works with modern MCP frameworks and should be compliant going forward.
@@ -88,6 +90,7 @@ secrets_dialog        → Rust native dialogs (macOS/Windows/Linux)
 
 ```python
 from fastmcp import FastMCP, Context
+from fastmcp.exceptions import ToolError
 from mcp_secrets import secrets_manager
 from mcp_secrets.fetcher import fetch_secrets
 
@@ -105,17 +108,26 @@ mcp = FastMCP("My Server")
 secrets_manager.initialize(mcp.name)
 
 @mcp.tool
-async def protected_action(ctx: Context) -> str:
-    # Check if secrets exist
-    if not secrets_manager.ensure_secrets(["api_key"]):
-        # Elicit from user if missing
-        success, message = await fetch_secrets(ctx, SECRETS_INFO)
-        if not success:
-            raise ToolError(message)
-    
-    # Use the secret
-    api_key = secrets_manager.retrieve_secret("api_key")
-    return f"Using key: {api_key[:8]}..."
+async def secure_api_request(ctx: Context) -> str:
+    """Secure-by-default secret access with permission prompts."""
+    try:
+        # Check if secrets exist without retrieving them
+        if not secrets_manager.secret_exists("api_key"):
+            # Need to fetch secrets first
+            status, message = await fetch_secrets(ctx, SECRETS_INFO)
+            if not status:
+                raise ToolError(message)
+        
+        # Retrieve secret with permission check
+        api_key = await secrets_manager.retrieve_secret_with_permission(
+            "api_key", ctx, reason="Authentication with external API"
+        )
+        
+        # Use the secret (truncated for security)
+        return f"✅ Making API request with key: {api_key[:8]}..."
+        
+    except Exception as e:
+        raise ToolError(f"❌ Secret access failed: {str(e)}")
 ```
 
 ### JavaScript (FastMCP)
@@ -137,15 +149,27 @@ const server = new FastMCP({ name: 'My Server' });
 secrets_manager.initialize('My Server');
 
 server.addTool({
-  name: 'protected_action',
+  name: 'secure_api_request',
+  description: 'Secure-by-default secret access with permission prompts',
   execute: async (args, { log }) => {
-    if (!secrets_manager.ensure_secrets(['api_key'])) {
-      const [success, message] = await fetch_secrets(context, SECRETS_INFO);
-      if (!success) throw new Error(message);
+    try {
+      // Check if secrets exist without retrieving them
+      if (!secrets_manager.secret_exists('api_key')) {
+        const [success, message] = await fetch_secrets(context, SECRETS_INFO);
+        if (!success) throw new Error(message);
+      }
+      
+      // Retrieve secret with permission check
+      const apiKey = await secrets_manager.retrieve_secret_with_permission(
+        'api_key', context, 'Authentication with external API'
+      );
+      
+      // Use the secret (truncated for security)
+      return `✅ Making API request with key: ${apiKey?.substring(0, 8)}...`;
+      
+    } catch (error) {
+      throw new Error(`❌ Secret access failed: ${error.message}`);
     }
-    
-    const apiKey = secrets_manager.retrieve_secret('api_key');
-    return `Using key: ${apiKey?.substring(0, 8)}...`;
   }
 });
 ```
@@ -310,28 +334,41 @@ A: Prevents malicious software from creating fake dialogs to steal your credenti
 **Q: Does this work with Claude Desktop?**
 A: Yes, it works with any MCP client that supports elicitation.
 
-## TODO
+## New: Secure-by-Default Permission System
 
-### SecretsManager Enhancement - User-Controlled Secret Confirmation
+As of the latest version, MCP Secrets implements a secure-by-default permission system:
 
-Add a secrets flag to support confirmation when a secret is used at varying levels.
+### How It Works
 
-**Implementation Concept:**
-- Opt-in feature controlled by a flag
-- Always ask user to confirm via elictation before proceeding with secret use
-- Two confirmation modes:
-  - **First-run caching**: Ask once when MCP server starts, cache the decision
-  - **Every-time**: Ask for confirmation on every secret access
+Every secret access now requires explicit user permission through MCP elicitation:
 
-**User Control Benefits:**
-- Puts user in driver's seat for sensitive secret usage
-- If user denies access, operation fails gracefully
-- Optional behavior - users who don't care can let secrets be used automatically
-- Enhanced security for paranoid users who want explicit control
+1. **Permission Prompt**: User sees: `"MyServer wants to use api_key. Reason: Authentication with external API"`
+2. **Three Options**:
+   - **Allow** - Permit this single use
+   - **Allow for Session** - Cache permission until MCP process restarts
+   - **Deny** - Refuse access and fail gracefully
 
-**Technical Notes:**
-- Flag-based activation in the template (e.g., `confirm_secrets_use=never,first,always`)
-- Cache confirmation state per server session or globally
+### Benefits
+
+- **🔒 Secure by default** - No secret access without explicit permission
+- **👤 User control** - Every access decision made by user  
+- **📋 Session boundaries** - Permissions don't persist across process restarts
+- **💡 Contextual** - Can include reason for secret access
+- **🚫 Graceful failures** - Tools fail cleanly when access denied
+
+### Migration
+
+Existing code using `retrieve_secret()` will continue to work, but consider upgrading to `retrieve_secret_with_permission()` for enhanced security.
+
+### Bypass for Programmatic Use
+
+For automated/programmatic MCP servers that can't handle interactive prompts, set the environment variable:
+
+```bash
+export MCP_BYPASS_SECRET_USE_CONFIRM=true
+```
+
+**⚠️ Security Warning**: This bypasses all permission prompts. Only use in trusted, automated environments where user interaction isn't possible.
 
 ## License
 
